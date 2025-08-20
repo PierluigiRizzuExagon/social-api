@@ -1,0 +1,16 @@
+{
+  "name": "google-business-frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve -s . -l 3001",
+    "dev": "serve -s . -l 3001"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Mini frontend per testare l'integrazione Google My Business",
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}

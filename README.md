@@ -5,6 +5,7 @@ Un backend NestJS completo per la gestione di social media, integrato con Google
 ## 🚀 Funzionalità
 
 ### Google My Business
+
 - **Autenticazione OAuth2** con Google
 - **Gestione Business Information** (modifica card aziendale)
 - **Gestione Recensioni** (risposta, modifica, eliminazione)
@@ -12,6 +13,7 @@ Un backend NestJS completo per la gestione di social media, integrato con Google
 - **Gestione Account** (informazioni account, permessi)
 
 ### Facebook
+
 - **Autenticazione OAuth2** con Facebook
 - **Gestione Pagine** (lista pagine, token di accesso)
 - **Gestione Post** (creazione, modifica, eliminazione)
@@ -20,6 +22,7 @@ Un backend NestJS completo per la gestione di social media, integrato con Google
 - **Insights** (metriche pagina)
 
 ### Frontend di Test
+
 - **Interfaccia HTML/JavaScript** per testare tutte le API
 - **Gestione token** automatica
 - **Upload file** per immagini
@@ -44,6 +47,7 @@ social/
 ## 🛠️ Tecnologie
 
 ### Backend
+
 - **NestJS** - Framework Node.js
 - **Passport.js** - Autenticazione OAuth2
 - **JWT** - Token di sessione
@@ -52,6 +56,7 @@ social/
 - **Form-data** - Gestione multipart
 
 ### Frontend
+
 - **HTML5** - Interfaccia utente
 - **JavaScript ES6** - Logica client
 - **CSS3** - Styling
@@ -66,12 +71,14 @@ social/
 ## ⚙️ Configurazione
 
 ### 1. Clona il repository
+
 ```bash
-git clone <repository-url>
-cd social
+git clone https://github.com/PierluigiRizzuExagon/social-api.git
+cd social-api
 ```
 
 ### 2. Installa le dipendenze
+
 ```bash
 npm install
 cd backend && npm install
@@ -127,6 +134,7 @@ FRONTEND_URL=http://localhost:8080
 ## 🚀 Avvio
 
 ### Sviluppo
+
 ```bash
 # Avvia backend e frontend contemporaneamente
 npm start
@@ -137,6 +145,7 @@ npm run frontend # Frontend su porta 8080
 ```
 
 ### Produzione
+
 ```bash
 cd backend
 npm run build
@@ -146,12 +155,14 @@ npm run start:prod
 ## 📚 API Endpoints
 
 ### Autenticazione
+
 - `GET /auth/google` - Login Google
 - `GET /auth/google/callback` - Callback Google
 - `GET /auth/facebook` - Login Facebook
 - `GET /auth/facebook/callback` - Callback Facebook
 
 ### Google My Business
+
 - `GET /google/accounts` - Lista account
 - `GET /google/accounts/:accountId/locations` - Lista location
 - `PUT /google/locations/:locationId` - Modifica location
@@ -164,6 +175,7 @@ npm run start:prod
 - `DELETE /google/posts/:postId` - Elimina post
 
 ### Facebook
+
 - `GET /facebook/pages` - Lista pagine
 - `GET /facebook/pages/:pageId/posts` - Lista post
 - `POST /facebook/pages/:pageId/posts` - Crea post (con immagine)
@@ -179,20 +191,24 @@ npm run start:prod
 ## 🔧 Headers Richiesti
 
 ### Google
+
 - `X-Google-Token`: Token di accesso Google
 
 ### Facebook
+
 - `X-Facebook-Token`: Token di accesso utente Facebook
 - `X-Facebook-Page-Token`: Token di accesso pagina Facebook (per operazioni su pagine)
 
 ## 📝 Note Importanti
 
 ### Google My Business
+
 - Richiede autenticazione OAuth2
 - Token scadono dopo 1 ora
 - Alcune operazioni richiedono permessi specifici
 
 ### Facebook
+
 - **User Access Token** vs **Page Access Token**:
   - User Token: per ottenere lista pagine
   - Page Token: per operazioni su pagine specifiche
@@ -201,6 +217,7 @@ npm run start:prod
 - **Permessi**: Richiede permessi specifici per ogni operazione
 
 ### Sicurezza
+
 - Token vengono gestiti lato client (localStorage)
 - Session management con express-session
 - CORS configurato per frontend
@@ -209,16 +226,19 @@ npm run start:prod
 ## 🐛 Debug
 
 ### Logs Backend
+
 - Console logs dettagliati per ogni operazione
 - Errori originali API esposti come JSON
 - Debug per token e parametri
 
 ### Logs Frontend
+
 - Console logs per ogni chiamata API
 - Debug per token e dati
 - Preview immagini prima dell'upload
 
 ### Errori Comuni
+
 - `EADDRINUSE`: Porta già in uso → `pkill -f "nest\|node"`
 - `Invalid OAuth 2.0 Access Token`: Token scaduto → Riloggare
 - `Cannot parse access token`: Token malformato → Verificare formato
@@ -239,8 +259,8 @@ MIT License
 ## 📞 Supporto
 
 Per problemi o domande:
+
 1. Controlla i logs del backend e frontend
 2. Verifica la configurazione delle variabili d'ambiente
 3. Controlla i permessi delle app Google/Facebook
 4. Apri una issue su GitHub
-# social-api

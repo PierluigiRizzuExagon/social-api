@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Media Integration Test</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.2em;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 40px;
+      }
+
+      .auth-section {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .login-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .login-btn {
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1em;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .google-btn {
+        background: #4285f4;
+      }
+      .google-btn:hover {
+        background: #3367d6;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+      }
+      .facebook-btn {
+        background: #1877f2;
+      }
+      .facebook-btn:hover {
+        background: #166fe5;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(24, 119, 242, 0.4);
+      }
+
+      .user-info {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        display: none;
+      }
+
+      .user-info.show {
+        display: block;
+      }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-right: 15px;
+        vertical-align: middle;
+      }
+
+      .api-section {
+        display: none;
+      }
+
+      .api-section.show {
+        display: block;
+      }
+
+      .api-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .api-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+      }
+
+      .api-card:hover {
+        border-color: #4285f4;
+        transform: translateY(-2px);
+      }
+
+      .api-card h3 {
+        color: #4285f4;
+        margin-bottom: 15px;
+      }
+
+      .api-btn {
+        background: #34a853;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        margin: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .api-btn:hover:not(:disabled) {
+        background: #2d8f47;
+        transform: translateY(-1px);
+      }
+
+      .api-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .rate-limit-warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        font-size: 0.9em;
+      }
+
+      .results {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        white-space: pre-wrap;
+      }
+
+      .error {
+        color: #dc3545;
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+      }
+
+      .success {
+        color: #155724;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+      }
+
+      .logout-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        float: right;
+      }
+
+      .logout-btn:hover {
+        background: #c82333;
+      }
+
+      .page-selector,
+      .post-id-input {
+        margin: 15px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .page-selector label,
+      .post-id-input label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #495057;
+      }
+
+      .page-selector select,
+      .post-id-input input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .post-id-input small {
+        display: block;
+        margin-top: 5px;
+        color: #6c757d;
+        font-size: 12px;
+      }
+
+      .post-form,
+      .comment-form {
+        margin: 20px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+
+      .post-form h4,
+      .comment-form h4 {
+        margin: 0 0 10px 0;
+        color: #495057;
+        font-size: 16px;
+      }
+
+      .post-form textarea,
+      .comment-form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        margin-bottom: 10px;
+      }
+
+      .post-form input,
+      .comment-form input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .file-upload {
+        margin: 10px 0;
+      }
+
+      .file-upload label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #495057;
+      }
+
+      .file-upload input[type="file"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+      }
+
+      .image-preview {
+        margin-top: 10px;
+        max-width: 200px;
+        max-height: 200px;
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        border: 2px solid #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🏢 Social Media Integration</h1>
+        <p>Test delle API per gestire Google My Business e Facebook</p>
+      </div>
+
+      <div class="content">
+        <!-- Sezione Autenticazione -->
+        <div class="auth-section" id="authSection">
+          <h2>🔐 Accedi con Social Media</h2>
+          <p style="margin: 20px 0">
+            Effettua il login per accedere alle funzionalità di Google My
+            Business e Facebook
+          </p>
+          <div class="login-buttons">
+            <a
+              href="http://localhost:3000/auth/google"
+              class="login-btn google-btn"
+            >
+              🚀 Login con Google
+            </a>
+            <a
+              href="http://localhost:3000/auth/facebook"
+              class="login-btn facebook-btn"
+            >
+              📘 Login con Facebook
+            </a>
+          </div>
+        </div>
+
+        <!-- Info Utente -->
+        <div class="user-info" id="userInfo">
+          <button class="logout-btn" onclick="logout()">Logout</button>
+          <div id="userDetails"></div>
+        </div>
+
+        <!-- Sezione API -->
+        <div class="api-section" id="apiSection">
+          <h2>🛠️ Test API Google My Business</h2>
+
+          <div class="rate-limit-warning">
+            ⚠️ <strong>Attenzione:</strong> Le API Google My Business hanno
+            quote molto basse. Usa i bottoni REALI con parsimonia. I bottoni
+            MOCK (grigi) sono sempre sicuri da usare.
+          </div>
+
+          <div class="api-grid">
+            <!-- Connection Test -->
+            <div class="api-card">
+              <h3>🔧 Connection Test</h3>
+              <p>Verifica la connessione alle API Google</p>
+              <button class="api-btn" onclick="testConnection()">
+                🔗 Test Connection
+              </button>
+              <div class="results" id="connectionResults"></div>
+            </div>
+
+            <!-- Account Management -->
+            <div class="api-card">
+              <h3>👤 Account Management</h3>
+              <p>Gestisci i tuoi account Google My Business</p>
+              <button class="api-btn" onclick="getAccounts()">
+                📋 Get Accounts (REALE)
+              </button>
+              <button
+                class="api-btn"
+                onclick="getAccountsMock()"
+                style="background: #6c757d"
+              >
+                🎭 Get Accounts (MOCK)
+              </button>
+              <div class="results" id="accountsResults"></div>
+            </div>
+
+            <!-- Location Management -->
+            <div class="api-card">
+              <h3>📍 Location Management</h3>
+              <p>Visualizza e gestisci le tue schede aziendali</p>
+              <button class="api-btn" onclick="getLocations()">
+                🏪 Get Locations (REALE)
+              </button>
+              <button
+                class="api-btn"
+                onclick="getLocationsMock()"
+                style="background: #6c757d"
+              >
+                🎭 Get Locations (MOCK)
+              </button>
+              <button class="api-btn" onclick="updateLocationDemo()">
+                ✏️ Update Location Demo
+              </button>
+              <div class="results" id="locationsResults"></div>
+            </div>
+
+            <!-- Posts Management -->
+            <div class="api-card">
+              <h3>📝 Posts Management</h3>
+              <p>Crea e gestisci i post delle tue schede</p>
+              <button class="api-btn" onclick="createPostDemo()">
+                ➕ Create Post Demo
+              </button>
+              <div class="results" id="postsResults"></div>
+            </div>
+
+            <!-- Reviews Management -->
+            <div class="api-card">
+              <h3>⭐ Reviews Management</h3>
+              <p>Visualizza e rispondi alle recensioni</p>
+              <button class="api-btn" onclick="getReviewsDemo()">
+                👀 Get Reviews Demo
+              </button>
+              <button class="api-btn" onclick="replyToReviewDemo()">
+                💬 Reply Demo
+              </button>
+              <div class="results" id="reviewsResults"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sezione API Facebook -->
+        <div class="api-section" id="facebookApiSection">
+          <h2>📘 Test API Facebook</h2>
+
+          <div class="rate-limit-warning">
+            ⚠️ <strong>Attenzione:</strong> Le API Facebook hanno limiti più
+            generosi di Google My Business, ma usa comunque i bottoni MOCK per
+            sviluppo sicuro.
+          </div>
+
+          <div class="api-grid">
+            <!-- Facebook Pages Management -->
+            <div class="api-card">
+              <h3>📄 Facebook Pages</h3>
+              <p>Gestisci le tue pagine Facebook</p>
+              <button class="api-btn" onclick="getFacebookPages()">
+                📋 Get Pages (REALE)
+              </button>
+              <button
+                class="api-btn"
+                onclick="getFacebookPagesMock()"
+                style="background: #6c757d"
+              >
+                🎭 Get Pages (MOCK)
+              </button>
+              <div class="results" id="facebookPagesResults"></div>
+            </div>
+
+            <!-- Facebook Posts Management -->
+            <div class="api-card">
+              <h3>📝 Facebook Posts</h3>
+              <p>Visualizza e crea post sulle tue pagine</p>
+
+              <!-- Selettore Pagina -->
+              <div class="page-selector">
+                <label for="pageSelect">Seleziona Pagina:</label>
+                <select id="pageSelect" onchange="updateSelectedPage()">
+                  <option value="461421877055590">pierluigirizzu.it</option>
+                  <option value="103057524879359">Rega Parrucchieri</option>
+                  <option value="110675600758492">Bookmaker's Nightmare</option>
+                </select>
+              </div>
+
+              <button class="api-btn" onclick="getFacebookPosts()">
+                📄 Get Posts (REALE)
+              </button>
+              <button
+                class="api-btn"
+                onclick="getFacebookPostsMock()"
+                style="background: #6c757d"
+              >
+                🎭 Get Posts (MOCK)
+              </button>
+
+              <!-- Form per creare post -->
+              <div class="post-form">
+                <h4>➕ Crea Nuovo Post</h4>
+                <textarea
+                  id="postMessage"
+                  placeholder="Scrivi il messaggio del post..."
+                  rows="3"
+                ></textarea>
+                <input
+                  type="text"
+                  id="postLink"
+                  placeholder="Link opzionale (es: https://example.com)"
+                />
+                <div class="file-upload">
+                  <label for="postImage">📷 Immagine (opzionale):</label>
+                  <input
+                    type="file"
+                    id="postImage"
+                    accept="image/*"
+                    onchange="previewImage()"
+                  />
+                  <div id="imagePreview" class="image-preview"></div>
+                </div>
+                <button class="api-btn" onclick="createFacebookPost()">
+                  🚀 Pubblica Post
+                </button>
+              </div>
+
+              <!-- Form per modificare post -->
+              <div class="post-form">
+                <h4>✏️ Modifica Post</h4>
+                <input
+                  type="text"
+                  id="updatePostIdInput"
+                  placeholder="ID del post da modificare..."
+                />
+                <textarea
+                  id="updatePostMessage"
+                  placeholder="Nuovo messaggio del post..."
+                  rows="3"
+                ></textarea>
+                <input
+                  type="text"
+                  id="updatePostLink"
+                  placeholder="Nuovo link opzionale..."
+                />
+                <div class="file-upload">
+                  <label for="updatePostImage"
+                    >📷 Nuova Immagine (opzionale):</label
+                  >
+                  <input
+                    type="file"
+                    id="updatePostImage"
+                    accept="image/*"
+                    onchange="previewUpdateImage()"
+                  />
+                  <div id="updateImagePreview" class="image-preview"></div>
+                </div>
+                <button
+                  class="api-btn"
+                  onclick="updateFacebookPost()"
+                  style="background: #17a2b8"
+                >
+                  ✏️ Modifica Post
+                </button>
+              </div>
+
+              <!-- Form per eliminare post -->
+              <div class="post-form">
+                <h4>🗑️ Elimina Post</h4>
+                <input
+                  type="text"
+                  id="deletePostIdInput"
+                  placeholder="ID del post da eliminare..."
+                />
+                <button
+                  class="api-btn"
+                  onclick="deleteFacebookPost()"
+                  style="background: #dc3545"
+                >
+                  🗑️ Elimina Post
+                </button>
+              </div>
+
+              <div class="results" id="facebookPostsResults"></div>
+            </div>
+
+            <!-- Facebook Comments Management -->
+            <div class="api-card">
+              <h3>💬 Facebook Comments</h3>
+              <p>Gestisci commenti sui post</p>
+
+              <!-- Input per Post ID -->
+              <div class="post-id-input">
+                <label for="postIdInput">Post ID:</label>
+                <input
+                  type="text"
+                  id="postIdInput"
+                  placeholder="Incolla l'ID del post qui..."
+                />
+                <small>Ottieni l'ID dal risultato di "Get Posts"</small>
+              </div>
+
+              <button class="api-btn" onclick="getFacebookComments()">
+                👀 Get Comments (REALE)
+              </button>
+              <button
+                class="api-btn"
+                onclick="getFacebookCommentsMock()"
+                style="background: #6c757d"
+              >
+                🎭 Get Comments (MOCK)
+              </button>
+
+              <!-- Form per rispondere ai commenti -->
+              <div class="comment-form">
+                <h4>💬 Rispondi a Commento</h4>
+                <input
+                  type="text"
+                  id="commentIdInput"
+                  placeholder="ID del commento..."
+                />
+                <textarea
+                  id="replyMessage"
+                  placeholder="Scrivi la risposta..."
+                  rows="2"
+                ></textarea>
+                <button class="api-btn" onclick="replyToFacebookComment()">
+                  📤 Invia Risposta
+                </button>
+              </div>
+
+              <!-- Form per eliminare commenti -->
+              <div class="comment-form">
+                <h4>🗑️ Elimina Commento</h4>
+                <input
+                  type="text"
+                  id="deleteCommentIdInput"
+                  placeholder="ID del commento da eliminare..."
+                />
+                <button
+                  class="api-btn"
+                  onclick="deleteFacebookComment()"
+                  style="background: #dc3545"
+                >
+                  🗑️ Elimina Commento
+                </button>
+              </div>
+
+              <!-- Form per nascondere/mostrare commenti -->
+              <div class="comment-form">
+                <h4>👁️ Nascondi/Mostra Commento</h4>
+                <input
+                  type="text"
+                  id="hideCommentIdInput"
+                  placeholder="ID del commento..."
+                />
+                <select id="hideCommentAction">
+                  <option value="true">Nascondi</option>
+                  <option value="false">Mostra</option>
+                </select>
+                <button
+                  class="api-btn"
+                  onclick="hideFacebookComment()"
+                  style="background: #ffc107; color: #000"
+                >
+                  👁️ Cambia Visibilità
+                </button>
+              </div>
+
+              <!-- Form per mettere like ai commenti -->
+              <div class="comment-form">
+                <h4>👍 Like Commento</h4>
+                <input
+                  type="text"
+                  id="likeCommentIdInput"
+                  placeholder="ID del commento..."
+                />
+                <button
+                  class="api-btn"
+                  onclick="likeFacebookComment()"
+                  style="background: #28a745"
+                >
+                  👍 Metti Like
+                </button>
+              </div>
+
+              <div class="results" id="facebookCommentsResults"></div>
+            </div>
+
+            <!-- Facebook Insights -->
+            <div class="api-card">
+              <h3>📊 Facebook Insights</h3>
+              <p>Visualizza statistiche delle pagine</p>
+              <button class="api-btn" onclick="getFacebookInsights()">
+                📈 Get Insights
+              </button>
+              <div class="results" id="facebookInsightsResults"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:3000";
+      let authToken = null;
+      let googleAccessToken = null;
+      let googleRefreshToken = null;
+      let facebookAccessToken = null;
+      let facebookRefreshToken = null;
+      let userInfo = null;
+      let currentProvider = null;
+
+      // Controlla se ci sono parametri di callback nell'URL
+      window.addEventListener("load", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        const provider = urlParams.get("provider");
+        const googleToken = urlParams.get("google_access_token");
+        const googleRefresh = urlParams.get("google_refresh_token");
+        const facebookToken = urlParams.get("facebook_access_token");
+        const facebookRefresh = urlParams.get("facebook_refresh_token");
+        const error = urlParams.get("error");
+
+        if (error) {
+          showError("Errore durante l'autenticazione: " + error);
+          return;
+        }
+
+        if (token && provider) {
+          authToken = token;
+          currentProvider = provider;
+
+          if (provider === "google" && googleToken) {
+            googleAccessToken = googleToken;
+            googleRefreshToken = googleRefresh;
+            localStorage.setItem("googleAccessToken", googleAccessToken);
+            localStorage.setItem("googleRefreshToken", googleRefreshToken);
+          } else if (provider === "facebook" && facebookToken) {
+            facebookAccessToken = facebookToken;
+            facebookRefreshToken = facebookRefresh;
+            localStorage.setItem("facebookAccessToken", facebookAccessToken);
+            localStorage.setItem("facebookRefreshToken", facebookRefreshToken);
+          }
+
+          // Salva i token nel localStorage
+          localStorage.setItem("authToken", authToken);
+          localStorage.setItem("currentProvider", currentProvider);
+
+          // Pulisci l'URL
+          window.history.replaceState({}, document.title, "/");
+
+          // Carica il profilo utente
+          loadUserProfile();
+        } else {
+          // Controlla se ci sono token salvati
+          const savedAuthToken = localStorage.getItem("authToken");
+          const savedProvider = localStorage.getItem("currentProvider");
+
+          if (savedAuthToken && savedProvider) {
+            authToken = savedAuthToken;
+            currentProvider = savedProvider;
+
+            if (savedProvider === "google") {
+              googleAccessToken = localStorage.getItem("googleAccessToken");
+              googleRefreshToken = localStorage.getItem("googleRefreshToken");
+            } else if (savedProvider === "facebook") {
+              facebookAccessToken = localStorage.getItem("facebookAccessToken");
+              facebookRefreshToken = localStorage.getItem(
+                "facebookRefreshToken"
+              );
+            }
+
+            loadUserProfile();
+          }
+        }
+      });
+
+      async function loadUserProfile() {
+        try {
+          const response = await fetch(`${API_BASE}/auth/profile`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+
+          if (response.ok) {
+            userInfo = await response.json();
+            showUserInfo(userInfo);
+          } else {
+            throw new Error("Failed to load user profile");
+          }
+        } catch (error) {
+          showError("Errore nel caricamento del profilo: " + error.message);
+          logout();
+        }
+      }
+
+      function showUserInfo(user) {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("userInfo").classList.add("show");
+
+        // Mostra la sezione API appropriata in base al provider
+        if (currentProvider === "google") {
+          document.getElementById("apiSection").classList.add("show");
+          document
+            .getElementById("facebookApiSection")
+            .classList.remove("show");
+        } else if (currentProvider === "facebook") {
+          document.getElementById("facebookApiSection").classList.add("show");
+          document.getElementById("apiSection").classList.remove("show");
+        }
+
+        document.getElementById("userDetails").innerHTML = `
+                <img src="${user.picture}" alt="Avatar" class="user-avatar">
+                <strong>${user.name}</strong> (${user.email})
+                <div style="margin-top: 10px;">
+                    <span style="background: #28a745; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">
+                        ✅ Autenticato con ${currentProvider}
+                    </span>
+                </div>
+            `;
+      }
+
+      async function makeApiCall(endpoint, options = {}) {
+        try {
+          const headers = {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+            ...options.headers,
+          };
+
+          // Aggiungi il token appropriato in base al provider
+          if (currentProvider === "google" && googleAccessToken) {
+            headers["X-Google-Token"] = `Google ${googleAccessToken}`;
+          } else if (currentProvider === "facebook" && facebookAccessToken) {
+            headers["X-Facebook-Token"] = `Facebook ${facebookAccessToken}`;
+          }
+
+          const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            headers,
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || "API call failed");
+          }
+
+          return data;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      // Funzione per chiamate API con Page Access Token
+      async function makeApiCallWithPageToken(
+        endpoint,
+        pageAccessToken,
+        options = {}
+      ) {
+        try {
+          const headers = {
+            Authorization: `Bearer ${authToken}`,
+            "X-Facebook-Page-Token": `Facebook ${pageAccessToken}`,
+            ...options.headers,
+          };
+
+          // Se il body è FormData, non impostare Content-Type (browser lo farà automaticamente)
+          if (!(options.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json";
+          }
+
+          console.log("🔍 DEBUG Page Token Call:");
+          console.log("Endpoint:", endpoint);
+          console.log(
+            "Page Access Token:",
+            pageAccessToken ? "Presente" : "Mancante"
+          );
+          console.log("Headers:", headers);
+          console.log(
+            "Body type:",
+            options.body instanceof FormData ? "FormData" : "JSON"
+          );
+
+          const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            headers,
+          });
+
+          console.log("Response status:", response.status);
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            console.error("API Error:", data);
+            throw new Error(data.message || "API call failed");
+          }
+
+          return data;
+        } catch (error) {
+          console.error("Fetch Error:", error);
+          throw error;
+        }
+      }
+
+      async function testConnection() {
+        try {
+          showLoading("connectionResults");
+          const data = await makeApiCall("/google-business/test-connection");
+          document.getElementById("connectionResults").textContent =
+            JSON.stringify(data, null, 2);
+          if (data.success) {
+            showSuccess("Connessione Google API riuscita!");
+          } else {
+            showError("Errore nella connessione: " + data.error);
+          }
+        } catch (error) {
+          document.getElementById(
+            "connectionResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel test di connessione: " + error.message);
+        }
+      }
+
+      async function getLocationsMock() {
+        try {
+          showLoading("locationsResults");
+          const data = await fetch(
+            `${API_BASE}/google-business/locations/mock`
+          );
+          const result = await data.json();
+          document.getElementById("locationsResults").textContent =
+            JSON.stringify(result, null, 2);
+          showSuccess(
+            "🎭 Dati MOCK location caricati (nessuna quota API usata)!"
+          );
+        } catch (error) {
+          showError("Errore nel caricamento MOCK: " + error.message);
+        }
+      }
+
+      async function getAccounts() {
+        try {
+          showLoading("accountsResults");
+          const data = await makeApiCall("/google-business/accounts");
+          document.getElementById("accountsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Account caricati con successo!");
+        } catch (error) {
+          document.getElementById(
+            "accountsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore: " + error.message);
+        }
+      }
+
+      async function getAccountsMock() {
+        try {
+          showLoading("accountsResults");
+          const data = await fetch(`${API_BASE}/google-business/accounts/mock`);
+          const result = await data.json();
+          document.getElementById("accountsResults").textContent =
+            JSON.stringify(result, null, 2);
+          showSuccess("🎭 Dati MOCK caricati (nessuna quota API usata)!");
+        } catch (error) {
+          showError("Errore nel caricamento MOCK: " + error.message);
+        }
+      }
+
+      async function getLocations() {
+        try {
+          showLoading("locationsResults");
+          const data = await makeApiCall("/google-business/locations");
+          document.getElementById("locationsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Locations caricate con successo!");
+        } catch (error) {
+          document.getElementById(
+            "locationsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel caricamento delle locations: " + error.message);
+        }
+      }
+
+      async function updateLocationDemo() {
+        try {
+          showLoading("locationsResults");
+          // Questo è solo un demo - in una vera app avresti un form
+          const updateData = {
+            websiteUri: "https://example.com",
+            primaryPhone: "+39 123 456 7890",
+          };
+
+          // Per il demo, usiamo un location name fittizio
+          const locationName = "locations/demo-location";
+
+          const data = await makeApiCall(
+            `/google-business/locations/${encodeURIComponent(locationName)}`,
+            {
+              method: "PUT",
+              body: JSON.stringify(updateData),
+            }
+          );
+
+          document.getElementById("locationsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Location aggiornata con successo!");
+        } catch (error) {
+          document.getElementById(
+            "locationsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError(
+            "Errore nell'aggiornamento della location: " + error.message
+          );
+        }
+      }
+
+      async function createPostDemo() {
+        try {
+          showLoading("postsResults");
+          const postData = {
+            languageCode: "it",
+            summary: "Questo è un post di esempio creato tramite API!",
+            topicType: "STANDARD",
+            callToAction: {
+              actionType: "LEARN_MORE",
+              url: "https://example.com",
+            },
+          };
+
+          const locationName = "locations/demo-location";
+
+          const data = await makeApiCall(
+            `/google-business/locations/${encodeURIComponent(
+              locationName
+            )}/posts`,
+            {
+              method: "POST",
+              body: JSON.stringify(postData),
+            }
+          );
+
+          document.getElementById("postsResults").textContent = JSON.stringify(
+            data,
+            null,
+            2
+          );
+          showSuccess("Post creato con successo!");
+        } catch (error) {
+          document.getElementById(
+            "postsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nella creazione del post: " + error.message);
+        }
+      }
+
+      async function getReviewsDemo() {
+        try {
+          showLoading("reviewsResults");
+          const locationName = "locations/demo-location";
+
+          const data = await makeApiCall(
+            `/google-business/locations/${encodeURIComponent(
+              locationName
+            )}/reviews`
+          );
+
+          document.getElementById("reviewsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Reviews caricate con successo!");
+        } catch (error) {
+          document.getElementById(
+            "reviewsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel caricamento delle reviews: " + error.message);
+        }
+      }
+
+      async function replyToReviewDemo() {
+        try {
+          showLoading("reviewsResults");
+          const replyData = {
+            comment:
+              "Grazie per la tua recensione! Apprezziamo molto il tuo feedback.",
+          };
+
+          const reviewName = "locations/demo-location/reviews/demo-review";
+
+          const data = await makeApiCall(
+            `/google-business/reviews/${encodeURIComponent(reviewName)}/reply`,
+            {
+              method: "POST",
+              body: JSON.stringify(replyData),
+            }
+          );
+
+          document.getElementById("reviewsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Risposta inviata con successo!");
+        } catch (error) {
+          document.getElementById(
+            "reviewsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nell'invio della risposta: " + error.message);
+        }
+      }
+
+      // ===== FUNZIONI FACEBOOK =====
+
+      async function getFacebookPages() {
+        try {
+          console.log("🔍 DEBUG getFacebookPages - Inizio");
+
+          showLoading("facebookPagesResults");
+          const data = await makeApiCall("/facebook/pages");
+
+          console.log("📄 Dati pagine ricevuti:", data);
+          console.log("📄 Tipo di data:", typeof data);
+          console.log("📄 È un array?", Array.isArray(data));
+
+          // Salva i dati delle pagine per usare i Page Access Tokens
+          pagesData = data;
+          console.log("💾 pagesData salvato:", pagesData);
+          console.log(
+            "💾 pagesData length:",
+            pagesData ? pagesData.length : "NULL"
+          );
+
+          document.getElementById("facebookPagesResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Pagine Facebook caricate con successo!");
+        } catch (error) {
+          console.error("❌ Errore in getFacebookPages:", error);
+          document.getElementById(
+            "facebookPagesResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel caricamento delle pagine: " + error.message);
+        }
+      }
+
+      async function getFacebookPagesMock() {
+        try {
+          showLoading("facebookPagesResults");
+          const data = await fetch(`${API_BASE}/facebook/pages/mock`);
+          const result = await data.json();
+          document.getElementById("facebookPagesResults").textContent =
+            JSON.stringify(result, null, 2);
+          showSuccess("🎭 Dati MOCK pagine Facebook caricati!");
+        } catch (error) {
+          showError("Errore nel caricamento MOCK: " + error.message);
+        }
+      }
+
+      // Variabili globali per le pagine
+      let selectedPageId = "461421877055590";
+      let pagesData = []; // Array con i dati delle pagine
+
+      function updateSelectedPage() {
+        selectedPageId = document.getElementById("pageSelect").value;
+        console.log("Pagina selezionata:", selectedPageId);
+      }
+
+      // Funzione per ottenere il Page Access Token
+      function getPageAccessToken(pageId) {
+        console.log(
+          "🔍 DEBUG getPageAccessToken - Cercando per pageId:",
+          pageId
+        );
+        console.log("📄 pagesData disponibile:", pagesData ? "SÌ" : "NO");
+        console.log(
+          "📄 pagesData length:",
+          pagesData ? pagesData.length : "NULL"
+        );
+
+        if (!pagesData || !Array.isArray(pagesData)) {
+          console.log("❌ pagesData non è un array valido");
+          return null;
+        }
+
+        const page = pagesData.find((p) => p.id === pageId);
+        console.log("📄 Pagina trovata:", page ? "SÌ" : "NO");
+        console.log("📄 Pagina trovata:", page);
+
+        const token = page ? page.access_token : null;
+        console.log("🔑 Token restituito:", token ? "SÌ" : "NO");
+
+        return token;
+      }
+
+      async function getFacebookPosts() {
+        try {
+          console.log("🔍 DEBUG getFacebookPosts - Inizio");
+
+          const selectedPageId = document.getElementById("pageSelect").value;
+          console.log("📄 Selected Page ID:", selectedPageId);
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          console.log(
+            "🔑 Page Access Token trovato:",
+            pageAccessToken ? "SÌ" : "NO"
+          );
+          console.log(
+            "🔑 Page Access Token (primi 10 caratteri):",
+            pageAccessToken ? pageAccessToken.substring(0, 10) + "..." : "NULL"
+          );
+
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          console.log(
+            "🎯 Endpoint:",
+            `/facebook/pages/${selectedPageId}/posts`
+          );
+
+          showLoading("facebookPostsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/pages/${selectedPageId}/posts`,
+            pageAccessToken
+          );
+
+          console.log("✅ Risposta ricevuta:", data);
+          document.getElementById("facebookPostsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess(`Post Facebook caricati per la pagina selezionata!`);
+        } catch (error) {
+          console.error("❌ Errore in getFacebookPosts:", error);
+          document.getElementById(
+            "facebookPostsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel caricamento dei post: " + error.message);
+        }
+      }
+
+      async function getFacebookPostsMock() {
+        try {
+          showLoading("facebookPostsResults");
+          const data = await fetch(
+            `${API_BASE}/facebook/pages/${selectedPageId}/posts/mock`
+          );
+          const result = await data.json();
+          document.getElementById("facebookPostsResults").textContent =
+            JSON.stringify(result, null, 2);
+          showSuccess("🎭 Dati MOCK post Facebook caricati!");
+        } catch (error) {
+          showError("Errore nel caricamento MOCK: " + error.message);
+        }
+      }
+
+      async function createFacebookPost() {
+        try {
+          console.log("🚀 Iniziando creazione post Facebook...");
+
+          const message = document.getElementById("postMessage").value.trim();
+          const link = document.getElementById("postLink").value.trim();
+          const selectedPageId = document.getElementById("pageSelect").value;
+
+          console.log("📝 Dati form:", { message, link, selectedPageId });
+
+          if (!message) {
+            showError("Inserisci un messaggio per il post!");
+            return;
+          }
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          // Ottieni il Page Access Token
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          console.log(
+            "🔑 Page Access Token trovato:",
+            pageAccessToken ? "SÌ" : "NO"
+          );
+
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookPostsResults");
+
+          const postData = new FormData();
+          postData.append("message", message);
+
+          // Aggiungi il link solo se presente
+          if (link) {
+            postData.append("link", link);
+          }
+
+          // Aggiungi l'immagine se presente
+          const imageFile = document.getElementById("postImage").files[0];
+          if (imageFile) {
+            postData.append("image", imageFile);
+          }
+
+          console.log("📤 Invio dati post:", postData);
+          console.log(
+            "🎯 Endpoint:",
+            `/facebook/pages/${selectedPageId}/posts`
+          );
+
+          // Usa il Page Access Token specifico
+          const data = await makeApiCallWithPageToken(
+            `/facebook/pages/${selectedPageId}/posts`,
+            pageAccessToken,
+            {
+              method: "POST",
+              body: postData, // FormData non ha bisogno di JSON.stringify
+            }
+          );
+
+          console.log("✅ Post creato con successo:", data);
+          document.getElementById("facebookPostsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Post Facebook creato con successo!");
+
+          // Pulisci i form
+          document.getElementById("postMessage").value = "";
+          document.getElementById("postLink").value = "";
+        } catch (error) {
+          console.error("❌ Errore creazione post:", error);
+          document.getElementById(
+            "facebookPostsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nella creazione del post: " + error.message);
+        }
+      }
+
+      async function getFacebookComments() {
+        try {
+          const postId = document.getElementById("postIdInput").value.trim();
+          const selectedPageId = document.getElementById("pageSelect").value;
+
+          if (!postId) {
+            showError("Inserisci l'ID del post per visualizzare i commenti!");
+            return;
+          }
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookCommentsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/posts/${postId}/comments`,
+            pageAccessToken
+          );
+          document.getElementById("facebookCommentsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Commenti Facebook caricati con successo!");
+        } catch (error) {
+          document.getElementById(
+            "facebookCommentsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel caricamento dei commenti: " + error.message);
+        }
+      }
+
+      async function getFacebookCommentsMock() {
+        try {
+          showLoading("facebookCommentsResults");
+          const postId =
+            document.getElementById("postIdInput").value.trim() ||
+            "123456789_post_123";
+          const data = await fetch(
+            `${API_BASE}/facebook/posts/${postId}/comments/mock`
+          );
+          const result = await data.json();
+          document.getElementById("facebookCommentsResults").textContent =
+            JSON.stringify(result, null, 2);
+          showSuccess("🎭 Dati MOCK commenti Facebook caricati!");
+        } catch (error) {
+          showError("Errore nel caricamento MOCK: " + error.message);
+        }
+      }
+
+      async function replyToFacebookComment() {
+        try {
+          const commentId = document
+            .getElementById("commentIdInput")
+            .value.trim();
+          const message = document.getElementById("replyMessage").value.trim();
+          const selectedPageId = document.getElementById("pageSelect").value;
+
+          if (!commentId) {
+            showError("Inserisci l'ID del commento!");
+            return;
+          }
+
+          if (!message) {
+            showError("Inserisci un messaggio per la risposta!");
+            return;
+          }
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookCommentsResults");
+
+          const replyData = {
+            message: message,
+          };
+
+          const data = await makeApiCallWithPageToken(
+            `/facebook/comments/${commentId}/reply`,
+            pageAccessToken,
+            {
+              method: "POST",
+              body: JSON.stringify(replyData),
+            }
+          );
+
+          document.getElementById("facebookCommentsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Risposta al commento inviata con successo!");
+
+          // Pulisci il form
+          document.getElementById("replyMessage").value = "";
+        } catch (error) {
+          document.getElementById(
+            "facebookCommentsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nell'invio della risposta: " + error.message);
+        }
+      }
+
+      async function deleteFacebookComment() {
+        try {
+          const commentId = document
+            .getElementById("deleteCommentIdInput")
+            .value.trim();
+          const selectedPageId = document.getElementById("pageSelect").value;
+
+          if (!commentId) {
+            showError("Inserisci l'ID del commento da eliminare!");
+            return;
+          }
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookCommentsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/comments/${commentId}`,
+            pageAccessToken,
+            {
+              method: "DELETE",
+            }
+          );
+
+          document.getElementById("facebookCommentsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Commento eliminato con successo!");
+
+          // Pulisci il form
+          document.getElementById("deleteCommentIdInput").value = "";
+        } catch (error) {
+          document.getElementById(
+            "facebookCommentsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nell'eliminazione del commento: " + error.message);
+        }
+      }
+
+      async function getFacebookInsights() {
+        try {
+          const selectedPageId = document.getElementById("pageSelect").value;
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookInsightsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/pages/${selectedPageId}/insights`,
+            pageAccessToken
+          );
+          document.getElementById("facebookInsightsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Insights Facebook caricati con successo!");
+        } catch (error) {
+          document.getElementById(
+            "facebookInsightsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nel caricamento degli insights: " + error.message);
+        }
+      }
+
+      async function getFacebookInsightsMock() {
+        try {
+          showLoading("facebookInsightsResults");
+          const pageId = "461421877055590";
+          const data = await fetch(
+            `${API_BASE}/facebook/pages/${pageId}/insights/mock`
+          );
+          const result = await data.json();
+          document.getElementById("facebookInsightsResults").textContent =
+            JSON.stringify(result, null, 2);
+          showSuccess("🎭 Dati MOCK insights Facebook caricati!");
+        } catch (error) {
+          showError("Errore nel caricamento MOCK: " + error.message);
+        }
+      }
+
+      // Nuove funzioni per gestione avanzata Facebook
+
+      async function updateFacebookPost() {
+        try {
+          const postId = document
+            .getElementById("updatePostIdInput")
+            .value.trim();
+          const message = document
+            .getElementById("updatePostMessage")
+            .value.trim();
+          const link = document.getElementById("updatePostLink").value.trim();
+
+          if (!postId) {
+            showError("Inserisci l'ID del post da modificare!");
+            return;
+          }
+
+          if (!message) {
+            showError("Inserisci il nuovo messaggio del post!");
+            return;
+          }
+
+          showLoading("facebookPostsResults");
+
+          const postData = new FormData();
+          postData.append("message", message);
+          if (link) postData.append("link", link);
+
+          // Aggiungi l'immagine se presente
+          const imageFile = document.getElementById("updatePostImage").files[0];
+          if (imageFile) {
+            showError(
+              "⚠️ Facebook non permette di modificare immagini nei post esistenti. L'immagine verrà ignorata."
+            );
+            // Non aggiungiamo l'immagine al FormData
+          }
+
+          const selectedPageId = document.getElementById("pageSelect").value;
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          const data = await makeApiCallWithPageToken(
+            `/facebook/posts/${postId}`,
+            pageAccessToken,
+            {
+              method: "PUT",
+              body: postData, // FormData non ha bisogno di JSON.stringify
+            }
+          );
+
+          document.getElementById("facebookPostsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Post modificato con successo!");
+
+          // Pulisci i form
+          document.getElementById("updatePostIdInput").value = "";
+          document.getElementById("updatePostMessage").value = "";
+          document.getElementById("updatePostLink").value = "";
+        } catch (error) {
+          document.getElementById(
+            "facebookPostsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nella modifica del post: " + error.message);
+        }
+      }
+
+      async function deleteFacebookPost() {
+        try {
+          const postId = document
+            .getElementById("deletePostIdInput")
+            .value.trim();
+
+          if (!postId) {
+            showError("Inserisci l'ID del post da eliminare!");
+            return;
+          }
+
+          const selectedPageId = document.getElementById("pageSelect").value;
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookPostsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/posts/${postId}`,
+            pageAccessToken,
+            {
+              method: "DELETE",
+            }
+          );
+
+          document.getElementById("facebookPostsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Post eliminato con successo!");
+
+          // Pulisci il form
+          document.getElementById("deletePostIdInput").value = "";
+        } catch (error) {
+          document.getElementById(
+            "facebookPostsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nell'eliminazione del post: " + error.message);
+        }
+      }
+
+      async function hideFacebookComment() {
+        try {
+          const commentId = document
+            .getElementById("hideCommentIdInput")
+            .value.trim();
+          const hide =
+            document.getElementById("hideCommentAction").value === "true";
+          const selectedPageId = document.getElementById("pageSelect").value;
+
+          if (!commentId) {
+            showError("Inserisci l'ID del commento!");
+            return;
+          }
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookCommentsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/comments/${commentId}/hide`,
+            pageAccessToken,
+            {
+              method: "POST",
+              body: JSON.stringify({ hide }),
+            }
+          );
+
+          document.getElementById("facebookCommentsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess(
+            `Commento ${hide ? "nascosto" : "mostrato"} con successo!`
+          );
+
+          // Pulisci il form
+          document.getElementById("hideCommentIdInput").value = "";
+        } catch (error) {
+          document.getElementById(
+            "facebookCommentsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError(
+            "Errore nel cambio visibilità del commento: " + error.message
+          );
+        }
+      }
+
+      async function likeFacebookComment() {
+        try {
+          const commentId = document
+            .getElementById("likeCommentIdInput")
+            .value.trim();
+          const selectedPageId = document.getElementById("pageSelect").value;
+
+          if (!commentId) {
+            showError("Inserisci l'ID del commento!");
+            return;
+          }
+
+          if (!selectedPageId) {
+            showError("Seleziona una pagina!");
+            return;
+          }
+
+          const pageAccessToken = getPageAccessToken(selectedPageId);
+          if (!pageAccessToken) {
+            showError(
+              "Page Access Token non trovato. Prima carica le pagine con 'Get Pages'!"
+            );
+            return;
+          }
+
+          showLoading("facebookCommentsResults");
+          const data = await makeApiCallWithPageToken(
+            `/facebook/comments/${commentId}/likes`,
+            pageAccessToken,
+            {
+              method: "POST",
+            }
+          );
+
+          document.getElementById("facebookCommentsResults").textContent =
+            JSON.stringify(data, null, 2);
+          showSuccess("Like aggiunto al commento con successo!");
+
+          // Pulisci il form
+          document.getElementById("likeCommentIdInput").value = "";
+        } catch (error) {
+          document.getElementById(
+            "facebookCommentsResults"
+          ).textContent = `Errore: ${error.message}`;
+          showError("Errore nell'aggiunta del like: " + error.message);
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("googleAccessToken");
+        localStorage.removeItem("googleRefreshToken");
+        localStorage.removeItem("facebookAccessToken");
+        localStorage.removeItem("facebookRefreshToken");
+        localStorage.removeItem("currentProvider");
+
+        authToken = null;
+        googleAccessToken = null;
+        googleRefreshToken = null;
+        facebookAccessToken = null;
+        facebookRefreshToken = null;
+        currentProvider = null;
+        userInfo = null;
+
+        document.getElementById("authSection").style.display = "block";
+        document.getElementById("userInfo").classList.remove("show");
+        document.getElementById("apiSection").classList.remove("show");
+        document.getElementById("facebookApiSection").classList.remove("show");
+
+        // Pulisci i risultati
+        [
+          "connectionResults",
+          "accountsResults",
+          "locationsResults",
+          "postsResults",
+          "reviewsResults",
+          "facebookPagesResults",
+          "facebookPostsResults",
+          "facebookCommentsResults",
+          "facebookInsightsResults",
+        ].forEach((id) => {
+          document.getElementById(id).textContent = "";
+        });
+      }
+
+      function showLoading(elementId) {
+        document.getElementById(elementId).textContent = "⏳ Caricamento...";
+      }
+
+      function showError(message) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "error";
+        errorDiv.textContent = message;
+        document.querySelector(".content").appendChild(errorDiv);
+
+        setTimeout(() => {
+          errorDiv.remove();
+        }, 5000);
+      }
+
+      function showSuccess(message) {
+        const successDiv = document.createElement("div");
+        successDiv.className = "success";
+        successDiv.textContent = message;
+        document.querySelector(".content").appendChild(successDiv);
+
+        setTimeout(() => {
+          successDiv.remove();
+        }, 3000);
+      }
+
+      // Funzioni per gestione immagini
+      function previewImage() {
+        const fileInput = document.getElementById("postImage");
+        const preview = document.getElementById("imagePreview");
+
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          };
+          reader.readAsDataURL(fileInput.files[0]);
+        } else {
+          preview.innerHTML = "";
+        }
+      }
+
+      function previewUpdateImage() {
+        const fileInput = document.getElementById("updatePostImage");
+        const preview = document.getElementById("updateImagePreview");
+
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          };
+          reader.readAsDataURL(fileInput.files[0]);
+        } else {
+          preview.innerHTML = "";
+        }
+      }
+    </script>
+  </body>
+</html>
